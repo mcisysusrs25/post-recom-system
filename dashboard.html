@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FeedWise - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1877F2;
+            --secondary-color: #166FE5;
+            --background-color: #F0F2F5;
+            --text-color: #050505;
+            --card-background: #FFFFFF;
+            --border-color: #E4E6EB;
+            --hover-background: #F2F2F2;
+            --light-text: #65676B;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .dashboard-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: var(--card-background);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-secondary {
+            background-color: #E4E6EB;
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #D8DADF;
+        }
+
+        .btn-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .create-post-section {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            margin: 16px 15px;
+            overflow: hidden;
+        }
+
+        .create-post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .create-post-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .create-post-form {
+            padding: 16px;
+            display: none;
+        }
+
+        .create-post-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--light-text);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 0.95rem;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .tag-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .tag-input-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px;
+            min-height: 48px;
+            align-items: center;
+        }
+
+        .tag-chip {
+            display: flex;
+            align-items: center;
+            background-color: #E7F3FF;
+            color: var(--primary-color);
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            margin: 2px;
+        }
+
+        .tag-chip-remove {
+            margin-left: 6px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .tag-input {
+            flex-grow: 1;
+            border: none;
+            outline: none;
+            min-width: 100px;
+            font-size: 0.95rem;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .posts-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 0 15px 20px;
+        }
+
+        .post-card {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            padding: 16px;
+            transition: box-shadow 0.3s ease;
+            width: 100%;
+        }
+
+        .post-card:hover {
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .post-author {
+            display: flex;
+            align-items: center;
+        }
+
+        .author-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #E4E6EB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: var(--light-text);
+            font-size: 1.2rem;
+        }
+
+        .author-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .author-name {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .post-time {
+            font-size: 0.8rem;
+            color: var(--light-text);
+        }
+
+        .post-content {
+            margin-bottom: 12px;
+        }
+
+        .post-content h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .post-content p {
+            color: var(--text-color);
+        }
+
+        .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 12px;
+        }
+
+        .post-tag {
+            background-color: #F0F2F5;
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-size: 0.8rem;
+            color: var(--light-text);
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .likes-count {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--light-text);
+            font-size: 0.9rem;
+        }
+
+        .likes-count i {
+            color: var(--primary-color);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            color: var(--light-text);
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background-color: var(--hover-background);
+        }
+
+        .action-btn i {
+            font-size: 1.1rem;
+        }
+
+        .no-posts {
+            text-align: center;
+            padding: 40px;
+            background-color: var(--card-background);
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            color: var(--light-text);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                padding: 8px 12px;
+            }
+            
+            .logo {
+                font-size: 1.5rem;
+            }
+            
+            .btn {
+                padding: 6px 10px;
+                font-size: 0.85rem;
+            }
+            
+            .posts-container {
+                padding: 0 8px 16px;
+            }
+            
+            .create-post-section {
+                margin: 12px 8px;
+            }
+            
+            .post-card {
+                padding: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-actions {
+                gap: 8px;
+            }
+            
+            .action-buttons {
+                gap: 5px;
+            }
+            
+            .action-btn {
+                padding: 6px 8px;
+                font-size: 0.8rem;
+            }
+            
+            .action-btn span {
+                display: none;
+            }
+            
+            .author-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div class="logo">FeedWise</div>
+            <div class="header-actions">
+                <button id="profile-btn" class="btn btn-secondary btn-icon">
+                    <i class="fas fa-user"></i>
+                    Profile
+                </button>
+                <button id="logout-btn" class="btn btn-primary btn-icon">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </header>
+
+        <section class="create-post-section">
+            <div class="create-post-header">
+                <h2>Create a Post</h2>
+                <button id="toggle-create-post" class="btn btn-primary btn-icon">
+                    <i class="fas fa-plus"></i>
+                    New Post
+                </button>
+            </div>
+            
+            <form id="post-form" class="create-post-form">
+                <div class="form-group">
+                    <label for="post-title">Title</label>
+                    <input type="text" id="post-title" required placeholder="Enter post title">
+                </div>
+                <div class="form-group">
+                    <label for="post-description">Description</label>
+                    <textarea id="post-description" required placeholder="What's on your mind?"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Tags</label>
+                    <div id="tag-input-container" class="tag-input-container">
+                        <input type="text" id="tag-input" class="tag-input" placeholder="Type a tag and press Enter">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-icon">
+                        <i class="fas fa-paper-plane"></i>
+                        Publish Post
+                    </button>
+                    <button type="button" id="cancel-post" class="btn btn-secondary btn-icon">
+                        <i class="fas fa-times"></i>
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <div id="posts-container" class="posts-container">
+            <!-- Posts will be dynamically added here -->
+        </div>
+    </div>
+
+    <script>
+        // Check if user is authenticated
+        const token = sessionStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'auth.html';
+        }
+
+        const postsContainer = document.getElementById('posts-container');
+        const postForm = document.getElementById('post-form');
+        const toggleCreatePostBtn = document.getElementById('toggle-create-post');
+        const cancelPostBtn = document.getElementById('cancel-post');
+        const logoutBtn = document.getElementById('logout-btn');
+        const profileBtn = document.getElementById('profile-btn');
+
+        // Toggle create post form
+        toggleCreatePostBtn.addEventListener('click', () => {
+            postForm.classList.toggle('active');
+        });
+
+        // Cancel post creation
+        cancelPostBtn.addEventListener('click', () => {
+            postForm.classList.remove('active');
+            postForm.reset();
+        });
+
+        // Logout functionality
+        logoutBtn.addEventListener('click', () => {
+            sessionStorage.removeItem('token');
+            window.location.href = 'auth.html';
+        });
+
+        // Profile button
+        profileBtn.addEventListener('click', () => {
+            window.location.href = 'profile.html';
+        });
+
+        // Helper function to format date
+        function formatDate(dateString) {
+            const date = new Date(dateString || Date.now());
+            return date.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit', 
+                minute: '2-digit'
+            });
+        }
+
+        // Get first letter of a name
+        function getInitials(name) {
+            return name ? name.charAt(0).toUpperCase() : 'U';
+        }
+
+        // Fetch posts
+        async function fetchPosts() {
+            try {
+                const response = await fetch('http://localhost:5000/api/posts', {
+                    method: 'GET',
+                    headers: {
+                        'x-auth-token': token
+                    }
+                });
+
+                const posts = await response.json();
+
+                if (posts.length === 0) {
+                    postsContainer.innerHTML = `
+                        <div class="no-posts">
+                            <p>No posts available. Create your first post!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                postsContainer.innerHTML = posts.map(post => `
+                    <div class="post-card">
+                        <div class="post-header">
+                            <div class="post-author">
+                                <div class="author-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="author-info">
+                                    <span class="author-name">${post.author?.name || 'User'}</span>
+                                    <span class="post-time">${formatDate(post.date)}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="post-content">
+                            <h3>${post.title}</h3>
+                            <p>${post.description}</p>
+                            <div class="post-tags">
+                                ${post.tags.map(tag => `<span class="post-tag"># ${tag}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div class="post-actions">
+                            <div class="likes-count">
+                                <i class="fas fa-thumbs-up"></i>
+                                ${post.likes || 0} Likes
+                            </div>
+                            <div class="action-buttons">
+                                <button onclick="likePost('${post._id}')" class="action-btn">
+                                    <i class="far fa-thumbs-up"></i>
+                                    <span>Like</span>
+                                </button>
+                                <button onclick="viewPostDetails('${post._id}')" class="action-btn">
+                                    <i class="far fa-comment"></i>
+                                    <span>Details</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error fetching posts:', error);
+                postsContainer.innerHTML = `
+                    <div class="no-posts">
+                        <p>Failed to load posts. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Tag Management
+        const tagInputContainer = document.getElementById('tag-input-container');
+        const tagInput = document.getElementById('tag-input');
+        let tags = [];
+
+        // Function to create a tag chip
+        function createTagChip(tagText) {
+            const chipContainer = document.createElement('div');
+            chipContainer.className = 'tag-chip';
+            
+            const tagSpan = document.createElement('span');
+            tagSpan.textContent = tagText;
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = '×';
+            removeBtn.className = 'tag-chip-remove';
+            removeBtn.addEventListener('click', () => {
+                tags = tags.filter(t => t !== tagText);
+                chipContainer.remove();
+            });
+            
+            chipContainer.appendChild(tagSpan);
+            chipContainer.appendChild(removeBtn);
+            
+            return chipContainer;
+        }
+
+        // Tag input event listener
+        tagInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ',') {
+                e.preventDefault();
+                const tagText = tagInput.value.trim();
+                
+                if (tagText && !tags.includes(tagText)) {
+                    tags.push(tagText);
+                    const tagChip = createTagChip(tagText);
+                    tagInputContainer.insertBefore(tagChip, tagInput);
+                    tagInput.value = '';
+                }
+            }
+        });
+
+        // Create post
+        postForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = document.getElementById('post-title').value;
+            const description = document.getElementById('post-description').value;
+
+            try {
+                const response = await fetch('http://localhost:5000/api/posts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-auth-token': token
+                    },
+                    body: JSON.stringify({ title, description, tags })
+                });
+
+                if (response.ok) {
+                    // Clear form and hide it
+                    postForm.reset();
+                    postForm.classList.remove('active');
+                    
+                    // Remove existing tag chips
+                    const existingChips = tagInputContainer.querySelectorAll('.tag-chip');
+                    existingChips.forEach(chip => chip.remove());
+                    tags = []; // Reset tags
+                    
+                    // Refresh posts
+                    fetchPosts();
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.message || 'Failed to create post');
+                }
+            } catch (error) {
+                console.error('Error creating post:', error);
+                alert('Network error. Please try again.');
+            }
+        });
+
+        // Like post function
+        async function likePost(postId) {
+            try {
+                const response = await fetch(`http://localhost:5000/api/posts/${postId}/like`, {
+                    method: 'POST',
+                    headers: {
+                        'x-auth-token': token
+                    }
+                });
+
+                if (response.ok) {
+                    // Refresh posts to update like count
+                    fetchPosts();
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.message || 'Failed to like post');
+                }
+            } catch (error) {
+                console.error('Error liking post:', error);
+                alert('Network error. Please try again.');
+            }
+        }
+
+        // View post details
+        function viewPostDetails(postId) {
+            window.location.href = `postDetails.html?id=${postId}`;
+        }
+
+        // Initial fetch of posts
+        fetchPosts();
+    </script>
+</body>
+</html>
