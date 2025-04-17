@@ -386,7 +386,7 @@
         // Fetch post details
         async function fetchPostDetails() {
             try {
-                const response = await fetch(`http://localhost:5000/api/posts/${postId}`, {
+                const response = await fetch(`http://127.0.0.1:5000/api/posts/${postId}`, {
                     method: 'GET',
                     headers: {
                         'x-auth-token': token
@@ -420,7 +420,7 @@
                 likeCount.innerHTML = `<i class="fas fa-thumbs-up"></i><span>${likes} ${likes === 1 ? 'Like' : 'Likes'}</span>`;
 
                 // Mark post as viewed
-                await fetch(`http://localhost:5000/api/posts/${postId}/view`, {
+                await fetch(`http://127.0.0.1:5000/api/posts/${postId}/view`, {
                     method: 'POST',
                     headers: {
                         'x-auth-token': token
@@ -435,7 +435,7 @@
         // Like post
         likeBtn.addEventListener('click', async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/posts/${postId}/like`, {
+                const response = await fetch(`http://127.0.0.1:5000/api/posts/${postId}/like`, {
                     method: 'POST',
                     headers: {
                         'x-auth-token': token

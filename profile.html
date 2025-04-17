@@ -585,7 +585,7 @@
             };
 
             try {
-                const response = await fetch('http://localhost:5000/api/profiles', {
+                const response = await fetch('http://127.0.0.1:5000/api/profiles/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -614,7 +614,7 @@
         // Fetch profile
         async function fetchProfile() {
             try {
-                const response = await fetch('http://localhost:5000/api/profiles/me', {
+                const response = await fetch('http://127.0.0.1:5000/api/profiles/me', {
                     method: 'GET',
                     headers: {
                         'x-auth-token': token
@@ -661,7 +661,7 @@
         // Edit profile button
         editProfileBtn.addEventListener('click', async () => {
             try {
-                const response = await fetch('http://localhost:5000/api/profiles/me', {
+                const response = await fetch('http://127.0.0.1:5000/api/profiles/me', {
                     method: 'GET',
                     headers: {
                         'x-auth-token': token
@@ -701,7 +701,7 @@
             };
 
             try {
-                const response = await fetch('http://localhost:5000/api/profiles', {
+                const response = await fetch('http://127.0.0.1:5000/api/profiles/', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',

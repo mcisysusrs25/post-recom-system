@@ -184,12 +184,18 @@
                 font-size: 1.4rem;
             }
         }
+
+        .logo{
+            color: white;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="auth-visual">
-            <h1>FeedWise</h1>
+            <a href="/index.html"class="logo"> <h1>FeedWise</h1></a>
+           
             <p>Discover, share, and connect through personalized content that matters to you.</p>
         </div>
         
@@ -199,6 +205,11 @@
             <h2 id="form-title">Register</h2>
             
             <form id="auth-form">
+                <div class="form-group" id="name-group" style="display: none;">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" placeholder="Enter your name">
+                </div>
+                
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input type="email" id="email" required placeholder="Enter your email">
@@ -209,11 +220,11 @@
                     <input type="password" id="password" required placeholder="Create a strong password">
                 </div>
                 
-                <button type="submit" class="submit-btn">Continue</button>
+                <button type="submit" class="submit-btn" id="submit-button">Continue</button>
             </form>
             
             <div class="toggle-mode">
-                Already have an account? 
+                <span id="toggle-text">Already have an account?</span>
                 <a href="#" id="toggle-link">Log in</a>
             </div>
         </div>
@@ -224,40 +235,84 @@
         const messageDiv = document.getElementById('message');
         const formTitle = document.getElementById('form-title');
         const toggleLink = document.getElementById('toggle-link');
+        const toggleText = document.getElementById('toggle-text');
+        const submitButton = document.getElementById('submit-button');
         let isLoginMode = false;
 
-        // Toggle between register and login
-        toggleLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            isLoginMode = !isLoginMode;
+        // Function to update UI based on login/register mode
+        function updateUI(login) {
+            isLoginMode = login;
             
             if (isLoginMode) {
                 formTitle.textContent = 'Log In';
                 toggleLink.textContent = 'Register';
-                toggleLink.parentElement.firstChild.textContent = 'Don\'t have an account? ';
+                toggleText.textContent = 'Don\'t have an account? ';
+                submitButton.textContent = 'Log In';
+                // Hide name field for login
+                document.getElementById('name-group').style.display = 'none';
             } else {
                 formTitle.textContent = 'Register';
                 toggleLink.textContent = 'Log in';
-                toggleLink.parentElement.firstChild.textContent = 'Already have an account? ';
+                toggleText.textContent = 'Already have an account? ';
+                submitButton.textContent = 'Register';
+                // Show name field for registration
+                document.getElementById('name-group').style.display = 'block';
             }
+        }
+
+        // Check URL parameters when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            if (urlParams.has('login')) {
+                updateUI(true);
+            } else if (urlParams.has('register')) {
+                updateUI(false);
+            } else {
+                // Default to register if no parameter specified
+                updateUI(false);
+            }
+        });
+
+        // Toggle between register and login
+        toggleLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Toggle mode
+            updateUI(!isLoginMode);
+            
+            // Update URL without page refresh
+            const newUrl = isLoginMode 
+                ? window.location.pathname + '?login' 
+                : window.location.pathname + '?register';
+            
+            window.history.pushState({}, '', newUrl);
         });
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            let name = '';
+            
+            if (!isLoginMode) {
+                name = document.getElementById('name').value;
+            }
 
             const endpoint = isLoginMode 
-                ? 'http://localhost:5000/api/auth/login' 
-                : 'http://localhost:5000/api/auth/register';
+                ? 'http://127.0.0.1:5000/api/auth/login' 
+                : 'http://127.0.0.1:5000/api/auth/register';
 
             try {
+                const requestData = isLoginMode 
+                    ? { email, password } 
+                    : { name, email, password };
+                
                 const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify(requestData)
                 });
 
                 const data = await response.json();
@@ -274,10 +329,10 @@
                                 Registration successful! Please log in.
                             </div>
                         `;
-                        isLoginMode = true;
-                        formTitle.textContent = 'Log In';
-                        toggleLink.textContent = 'Register';
-                        toggleLink.parentElement.firstChild.textContent = 'Don\'t have an account? ';
+                        // Switch to login mode
+                        updateUI(true);
+                        // Update URL
+                        window.history.pushState({}, '', window.location.pathname + '?login');
                     }
                 } else {
                     // Show error message

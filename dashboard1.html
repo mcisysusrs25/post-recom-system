@@ -42,28 +42,6 @@
         .post-count {
             color: var(--light-text);
             font-size: 0.9rem;
-            padding-left: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .refresh-btn {
-            background: none;
-            border: none;
-            color: var(--primary-color);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 0.9rem;
-            padding: 5px 10px;
-            border-radius: 4px;
-            transition: background-color 0.2s ease;
-        }
-
-        .refresh-btn:hover {
-            background-color: var(--hover-background);
         }
 
         .dashboard-container {
@@ -379,40 +357,6 @@
             color: var(--light-text);
         }
 
-        /* Loading animation styles */
-        .loading-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-            background-color: var(--card-background);
-            border-radius: 8px;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-
-        .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border-left-color: var(--primary-color);
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-
-        .loading-text {
-            color: var(--light-text);
-            text-align: center;
-            margin-top: 10px;
-            font-size: 1rem;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
         @media (max-width: 768px) {
             .dashboard-header {
                 padding: 8px 12px;
@@ -521,18 +465,10 @@
         </section>
         <div class="post-count">
             <span id="post-count-display" class="post-count"></span>
-            <button id="refresh-posts" class="refresh-btn">
-                <i class="fas fa-sync-alt"></i>
-                Refresh
-            </button>
         </div>
 
         <div id="posts-container" class="posts-container">
-            <!-- Loading animation will be shown here initially -->
-            <div class="loading-container">
-                <div class="spinner"></div>
-                <div class="loading-text">Finding the best recommended posts for you...</div>
-            </div>
+            <!-- Posts will be dynamically added here -->
         </div>
     </div>
 
@@ -540,7 +476,7 @@
         // Check if user is authenticated
         const token = sessionStorage.getItem('token');
         if (!token) {
-            window.location.href = 'index.html';
+            window.location.href = 'auth.html';
         }
 
         const postsContainer = document.getElementById('posts-container');
@@ -549,7 +485,6 @@
         const cancelPostBtn = document.getElementById('cancel-post');
         const logoutBtn = document.getElementById('logout-btn');
         const profileBtn = document.getElementById('profile-btn');
-        const refreshBtn = document.getElementById('refresh-posts');
 
         // Toggle create post form
         toggleCreatePostBtn.addEventListener('click', () => {
@@ -565,18 +500,12 @@
         // Logout functionality
         logoutBtn.addEventListener('click', () => {
             sessionStorage.removeItem('token');
-            window.location.href = 'index.html';
+            window.location.href = 'auth.html';
         });
 
         // Profile button
         profileBtn.addEventListener('click', () => {
             window.location.href = 'profile.html';
-        });
-
-        // Refresh button event listener
-        refreshBtn.addEventListener('click', () => {
-            showLoading();
-            fetchPosts();
         });
 
         // Helper function to format date
@@ -593,16 +522,6 @@
         // Get first letter of a name
         function getInitials(name) {
             return name ? name.charAt(0).toUpperCase() : 'U';
-        }
-
-        // Show loading animation
-        function showLoading() {
-            postsContainer.innerHTML = `
-                <div class="loading-container">
-                    <div class="spinner"></div>
-                    <div class="loading-text">Finding the best recommended posts for you...</div>
-                </div>
-            `;
         }
 
         // Fetch and render posts
@@ -629,59 +548,59 @@
 
                 if (!posts || posts.length === 0) {
                     postsContainer.innerHTML = `
-                        <div class="no-posts">
-                            <p>No posts available. Create your first post!</p>
-                        </div>
-                    `;
+                <div class="no-posts">
+                    <p>No posts available. Create your first post!</p>
+                </div>
+            `;
                     return;
                 }
 
                 postsContainer.innerHTML = posts.map(post => `
-                    <div class="post-card" id="post-${post._id}">
-                        <div class="post-header">
-                            <div class="post-author">
-                                <div class="author-avatar">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <div class="author-info">
-                                    <span class="author-name">${post.author?.name || 'User'}</span>
-                                    <span class="post-time">${formatDate(post.date)}</span>
-                                </div>
-                            </div>
+            <div class="post-card">
+                <div class="post-header">
+                    <div class="post-author">
+                        <div class="author-avatar">
+                            <i class="fas fa-user"></i>
                         </div>
-                        <div class="post-content">
-                            <h3>${post.title}</h3>
-                            <p>${post.description}</p>
-                            <div class="post-tags">
-                                ${post.tags.map(tag => `<span class="post-tag"># ${tag}</span>`).join('')}
-                            </div>
-                        </div>
-                        <div class="post-actions">
-                            <div class="likes-count" id="likes-${post._id}">
-                                <i class="fas fa-thumbs-up"></i>
-                                ${post.likes || 0} Likes
-                            </div>
-                            <div class="action-buttons">
-                                <button onclick="likePost('${post._id}')" class="action-btn">
-                                    <i class="far fa-thumbs-up"></i>
-                                    <span>Like</span>
-                                </button>
-                                <button onclick="viewPostDetails('${post._id}')" class="action-btn">
-                                    <i class="far fa-comment"></i>
-                                    <span>Details</span>
-                                </button>
-                            </div>
+                        <div class="author-info">
+                            <span class="author-name">${post.author?.name || 'User'}</span>
+                            <span class="post-time">${formatDate(post.date)}</span>
                         </div>
                     </div>
-                `).join('');
+                </div>
+                <div class="post-content">
+                    <h3>${post.title}</h3>
+                    <p>${post.description}</p>
+                    <div class="post-tags">
+                        ${post.tags.map(tag => `<span class="post-tag"># ${tag}</span>`).join('')}
+                    </div>
+                </div>
+                <div class="post-actions">
+                    <div class="likes-count">
+                        <i class="fas fa-thumbs-up"></i>
+                        ${post.likes || 0} Likes
+                    </div>
+                    <div class="action-buttons">
+                        <button onclick="likePost('${post._id}')" class="action-btn">
+                            <i class="far fa-thumbs-up"></i>
+                            <span>Like</span>
+                        </button>
+                        <button onclick="viewPostDetails('${post._id}')" class="action-btn">
+                            <i class="far fa-comment"></i>
+                            <span>Details</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
 
             } catch (error) {
                 console.error('Error fetching posts:', error);
                 postsContainer.innerHTML = `
-                    <div class="no-posts">
-                        <p>Failed to load posts. Please try again later.</p>
-                    </div>
-                `;
+            <div class="no-posts">
+                <p>Failed to load posts. Please try again later.</p>
+            </div>
+        `;
             }
         }
 
@@ -753,8 +672,7 @@
                     existingChips.forEach(chip => chip.remove());
                     tags = []; // Reset tags
 
-                    // Show loading and refresh posts
-                    showLoading();
+                    // Refresh posts
                     fetchPosts();
                 } else {
                     const errorData = await response.json();
@@ -766,7 +684,7 @@
             }
         });
 
-        // Like post function without page refresh
+        // Like post function
         async function likePost(postId) {
             try {
                 const response = await fetch(`http://127.0.0.1:5000/api/posts/${postId}/like`, {
@@ -777,15 +695,8 @@
                 });
 
                 if (response.ok) {
-                    // Update like count without refreshing entire page
-                    const data = await response.json();
-                    const likesElement = document.getElementById(`likes-${postId}`);
-                    if (likesElement) {
-                        likesElement.innerHTML = `
-                            <i class="fas fa-thumbs-up"></i>
-                            ${data.likes || 0} Likes
-                        `;
-                    }
+                    // Refresh posts to update like count
+                    fetchPosts();
                 } else {
                     const errorData = await response.json();
                     alert(errorData.message || 'Failed to like post');
@@ -801,12 +712,10 @@
             window.location.href = `postDetails.html?id=${postId}`;
         }
 
-        // Show loading on initial load
-        showLoading();
-
         // Initial fetch of posts
         fetchPosts();
     </script>
 </body>
 
 </html>
+
